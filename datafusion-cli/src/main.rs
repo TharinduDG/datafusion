@@ -216,20 +216,17 @@ async fn main_inner() -> Result<()> {
 
     let commands = args.command;
     let files = args.file;
-    let rc = match args.rc {
-        Some(file) => file,
-        None => {
-            let mut files = Vec::new();
-            let home = dirs::home_dir();
-            if let Some(p) = home {
-                let home_rc = p.join(".datafusionrc");
-                if home_rc.exists() {
-                    files.push(home_rc.into_os_string().into_string().unwrap());
-                }
+    let rc = args.rc.unwrap_or_else(|| {
+        let mut files = Vec::new();
+        let home = dirs::home_dir();
+        if let Some(p) = home {
+            let home_rc = p.join(".datafusionrc");
+            if home_rc.exists() {
+                files.push(home_rc.into_os_string().into_string().unwrap());
             }
-            files
         }
-    };
+        files
+    });
 
     if commands.is_empty() && files.is_empty() {
         if !rc.is_empty() {
